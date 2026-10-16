@@ -1,3 +1,5 @@
+//SUBです。
+
 #include <M5StickC.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h> # モーターを動かすライブラリ
@@ -17,6 +19,9 @@ void setup() {
   Wire.begin(32, 33);
   pwm.begin();
   pwm.setPWMFreq(50);
+  delay(10);
+  delay(10);
+  delay(10);
   delay(10);
 }
 
