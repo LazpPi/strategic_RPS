@@ -19,10 +19,8 @@ void setup() {
   Wire.begin(32, 33);
   pwm.begin();
   pwm.setPWMFreq(50);
-  delay(10);
-  delay(10);
-  delay(10);
-  delay(10);
+  delay(5000);
+ 
 }
 
 void loop() {
