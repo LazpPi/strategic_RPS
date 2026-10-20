@@ -6,7 +6,7 @@
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-int handState = 0; // 現在の状態 (0:パー, 1:グー, 2:チョキ)
+int handState_Left = 0; // 現在の状態 (0:パー, 1:グー, 2:チョキ)
 
 void setup() {
   M5.begin();
@@ -14,7 +14,7 @@ void setup() {
   M5.Lcd.setTextSize(2);
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setCursor(0, 0);
-  M5.Lcd.println("Push A Btn!"); // 起動時のメッセージ
+  M5.Lcd.println("Push B Btn!"); // 起動時のメッセージ
 
   Wire.begin(32, 33);
   pwm.begin();
@@ -26,11 +26,11 @@ void setup() {
 void loop() {
   M5.update(); // ボタン状態の読み取り（必須）
 
-  // Aボタン（正面のM5ボタン）が押されたら
-  if (M5.BtnA.wasPressed()) {
-    handState++; // 状態を1つ進める
-    if (handState > 2) {
-      handState = 0; // 2(チョキ)の次は0(パー)に戻る
+  // Bボタン（側面のM5ボタン）が押されたら
+  if (M5.BtnB.wasPressed()) {
+    handState_Left++; // 状態を1つ進める
+    if (handState_Left > 2) {
+      handState_Left = 0; // 2(チョキ)の次は0(パー)に戻る
     }
 
     // 画面のリセット
@@ -38,7 +38,7 @@ void loop() {
     M5.Lcd.setCursor(0, 0);
 
     // 状態に合わせて形と画面表示を切り替える
-    if (handState == 0) {
+    if (handState_Left == 0) {
       // パー
       pwm.setPWM(0, 0, 200);
       pwm.setPWM(1, 0, 300);
@@ -47,7 +47,7 @@ void loop() {
       pwm.setPWM(4, 0, 300);
       M5.Lcd.println("PA");
     } 
-    else if (handState == 1) {
+    else if (handState_Left == 1) {
       // グー
       pwm.setPWM(0, 0, 380);
       pwm.setPWM(1, 0, 450);
@@ -56,7 +56,7 @@ void loop() {
       pwm.setPWM(4, 0, 160);
       M5.Lcd.println("GU");
     } 
-    else if (handState == 2) {
+    else if (handState_Left == 2) {
       // チョキ
       pwm.setPWM(0, 0, 380);
       pwm.setPWM(1, 0, 300);
