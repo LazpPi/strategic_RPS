@@ -38,7 +38,7 @@ void loop() {
     if (handState == 0) {
       // パー
       pwm.setPWM(0, 0, 200);
-      pwm.setPWM(1, 0, 300);
+      pwm.setPWM(1, 0, 320);
       pwm.setPWM(2, 0, 220);
       pwm.setPWM(3, 0, 300);
       pwm.setPWM(4, 0, 300);
@@ -47,8 +47,8 @@ void loop() {
     else if (handState == 1) {
       // グー
       pwm.setPWM(0, 0, 380);
-      pwm.setPWM(1, 0, 450);
-      pwm.setPWM(2, 0, 420);
+      pwm.setPWM(1, 0, 410);
+      pwm.setPWM(2, 0, 430);
       pwm.setPWM(3, 0, 180);
       pwm.setPWM(4, 0, 160);
       M5.Lcd.println("GU");
@@ -56,7 +56,7 @@ void loop() {
     else if (handState == 2) {
       // チョキ
       pwm.setPWM(0, 0, 380);
-      pwm.setPWM(1, 0, 300);
+      pwm.setPWM(1, 0, 320);
       pwm.setPWM(2, 0, 220);
       pwm.setPWM(3, 0, 180);
       pwm.setPWM(4, 0, 160);
