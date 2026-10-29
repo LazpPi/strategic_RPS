@@ -1,6 +1,7 @@
 //SUBです。
 
-#include <M5StickC.h>
+
+#include <M5Unified.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h> # モーターを動かすライブラリ
 
@@ -40,29 +41,30 @@ void loop() {
     // 状態に合わせて形と画面表示を切り替える
     if (handState_Left == 0) {
       // パー
-      pwm.setPWM(0, 0, 200);
-      pwm.setPWM(1, 0, 300);
-      pwm.setPWM(2, 0, 220);
-      pwm.setPWM(3, 0, 300);
-      pwm.setPWM(4, 0, 300);
+      pwm.setPWM(8, 0, 300);
+      pwm.setPWM(9, 0, 300);
+      pwm.setPWM(10, 0, 380);
+      pwm.setPWM(11, 0, 200);
+      pwm.setPWM(12, 0, 200);
       M5.Lcd.println("PA");
     } 
     else if (handState_Left == 1) {
       // グー
-      pwm.setPWM(0, 0, 380);
-      pwm.setPWM(1, 0, 450);
-      pwm.setPWM(2, 0, 420);
-      pwm.setPWM(3, 0, 180);
-      pwm.setPWM(4, 0, 160);
+      pwm.setPWM(8, 0, 180);
+      pwm.setPWM(9, 0, 200);
+      pwm.setPWM(10, 0, 180);
+      pwm.setPWM(11, 0, 380);
+      pwm.setPWM(12, 0, 380);
       M5.Lcd.println("GU");
     } 
     else if (handState_Left == 2) {
       // チョキ
-      pwm.setPWM(0, 0, 380);
-      pwm.setPWM(1, 0, 300);
-      pwm.setPWM(2, 0, 220);
-      pwm.setPWM(3, 0, 180);
-      pwm.setPWM(4, 0, 160);
+      pwm.setPWM(8, 0, 160);
+      pwm.setPWM(9, 0, 380);
+      pwm.setPWM(10, 0, 380);
+      
+      pwm.setPWM(11, 0, 400);
+      pwm.setPWM(12, 0, 380);
       M5.Lcd.println("CHOKI");
     }
   }
