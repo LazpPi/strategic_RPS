@@ -51,6 +51,30 @@ def send_hand_to_m5(hand):
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 
+# ==========================================
+# コントローラー設定（未接続でもキーボードで起動可能）
+# ==========================================
+pygame.joystick.init()
+joystick = None
+
+if pygame.joystick.get_count() > 0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+    print(f"コントローラー接続: {joystick.get_name()}")
+    print(f"ボタン数: {joystick.get_numbuttons()} / Axis数: {joystick.get_numaxes()}")
+else:
+    print("コントローラー未接続：キーボード操作で起動します")
+
+def joy_button_pressed(button_number):
+    """指定番号のコントローラーボタンが押されているか確認"""
+    return (
+        joystick is not None
+        and joystick.get_init()
+        and button_number < joystick.get_numbuttons()
+        and joystick.get_button(button_number)
+    )
+
+
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("戦略的じゃんけん MVP")
@@ -212,8 +236,13 @@ while running:
         if event.type == pygame.QUIT: # ウィンドウの×ボタンが押されたら
             running = False
         if event.type == pygame.KEYDOWN:
-            # 待機・結果画面の時にスペースキーを押すとゲーム開始
+            # 待機・結果画面：SPACEキーで開始・リトライ
             if event.key == pygame.K_SPACE and game_state != "PLAYING":
+                reset_game()
+
+        # コントローラーのButton 0～4：開始・リトライ
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button in (0, 1, 2, 3, 4) and game_state != "PLAYING":
                 reset_game()
 
     # ----------------------------------
@@ -236,22 +265,56 @@ while running:
             send_hand_to_m5(robot_hand)
             play_sound(se_hand_change) 
 
-        # プレイヤーの移動
+        # プレイヤーの移動（キーボード＋コントローラー）
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player_x > 0: 
+
+        # コントローラーAxis取得
+        axis_x = 0.0
+        axis_y = 0.0
+        axis_4 = -1.0
+        axis_5 = -1.0
+
+        if joystick is not None and joystick.get_init():
+            if joystick.get_numaxes() > 0:
+                axis_x = joystick.get_axis(0)
+            if joystick.get_numaxes() > 1:
+                axis_y = joystick.get_axis(1)
+            if joystick.get_numaxes() > 4:
+                axis_4 = joystick.get_axis(4)
+            if joystick.get_numaxes() > 5:
+                axis_5 = joystick.get_axis(5)
+
+        # 左右移動：キーボード、ボタン13/14、Axis 0
+        move_left = keys[pygame.K_LEFT] or joy_button_pressed(13) or axis_x <= -0.8
+        move_right = keys[pygame.K_RIGHT] or joy_button_pressed(14) or axis_x >= 0.8
+
+        if move_left and player_x > 0:
             player_x -= player_speed
-        if keys[pygame.K_RIGHT] and player_x < WIDTH - player_size: 
+        if move_right and player_x < WIDTH - player_size:
             player_x += player_speed
-        
-        # 上キーでジャンプ開始
-        if keys[pygame.K_UP] and not is_jumping:
+
+        # ジャンプ：上キー、Button 11、Axis 1のマイナス、
+        # Axis 4またはAxis 5が1.0付近
+        jump_pressed = (
+            keys[pygame.K_UP]
+            or joy_button_pressed(11)
+            or axis_y <= -0.5
+            or axis_4 >= 0.8
+            or axis_5 >= 0.8
+        )
+
+        if jump_pressed and not is_jumping:
             is_jumping = True
-            velocity_y = -jump_speed # 上向き（マイナス）の力を加える
+            velocity_y = -jump_speed
             play_sound(se_jump)
+
+        # 急降下：下キーまたはButton 12
+        down_pressed = keys[pygame.K_DOWN] or joy_button_pressed(12)
 
         # ジャンプ中の重力と移動の処理
         if is_jumping:
-            if keys[pygame.K_DOWN]: velocity_y += 4 # 下キーを押すと急降下
+            if down_pressed:
+                velocity_y += 4 # 下キーを押すと急降下
             player_y += velocity_y
             velocity_y += gravity # 毎フレーム重力を足して落下させる
             
@@ -382,5 +445,7 @@ while running:
 
 # ゲームのウィンドウが閉じられた時の終了処理
 if ser is not None: ser.close() # 繋いでいたシリアルポートを綺麗に閉じる
+if joystick is not None and joystick.get_init():
+    joystick.quit()
 pygame.quit() # Pygameを終了
 sys.exit() # プログラム自体を終了
