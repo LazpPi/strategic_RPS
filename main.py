@@ -74,7 +74,7 @@ def joy_button_pressed(button_number):
 
 # ウィンドウの設定
 WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED, display=1)
 pygame.display.set_caption("戦略的じゃんけん MVP")
 clock = pygame.time.Clock()
 
@@ -298,6 +298,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            running = False
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             action_pressed = True
         # コントローラーの主要ボタン(A, B, X, Yなど)が押された場合
@@ -494,8 +496,12 @@ while running:
                 # 全3ラウンド終了時の処理
                 if play_count >= 3:
                     game_state = "RESULT_END" 
+                    
+                    # ターミナルへ最終結果（クリア回数とチケット枚数）を出力する
+                    ticket_count = 1 if clear_count <= 1 else clear_count
                     print("==================================================")
-                    print(f"      3セット終了！ (クリア回数: {clear_count}/3)")
+                    print(f"      3セット終了！ (勝ち数: {clear_count}/3)")
+                    print(f"      チケット配布枚数: {ticket_count}枚")
                     print("==================================================")
                     
                     # M5StickCへ最終クリア回数(0〜3)を送信して画面を更新させる
