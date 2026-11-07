@@ -298,10 +298,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            running = False
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            action_pressed = True
+            
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+            if event.key == pygame.K_SPACE:
+                action_pressed = True
+                
+            # --- テスト運用用ショートカットキー（強制クリア / 強制ゲームオーバー） ---
+            if event.key == pygame.K_w and game_state in ("PLAYING", "PLAYING_DEMO"):
+                score = target_score
+            if event.key == pygame.K_l and game_state in ("PLAYING", "PLAYING_DEMO"):
+                hp = 0
+
         # コントローラーの主要ボタン(A, B, X, Yなど)が押された場合
         if event.type == pygame.JOYBUTTONDOWN and event.button in (0, 1, 2, 3, 4):
             action_pressed = True
